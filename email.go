@@ -16,6 +16,7 @@ import (
 	"mime"
 	"mime/multipart"
 	"mime/quotedprintable"
+	"net"
 	"net/mail"
 	"net/smtp"
 	"net/textproto"
@@ -511,7 +512,9 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 		return err
 	}
 
-	c, err := smtp.NewClient(conn, t.ServerName)
+	host, _, _ := net.SplitHostPort(addr)
+
+	c, err := smtp.NewClient(conn, host)
 	if err != nil {
 		return err
 	}
@@ -520,11 +523,11 @@ func (e *Email) SendWithTLS(addr string, a smtp.Auth, t *tls.Config) error {
 		return err
 	}
 	// Use TLS if available
-	if ok, _ := c.Extension("STARTTLS"); ok {
-		if err = c.StartTLS(t); err != nil {
-			return err
-		}
-	}
+	// if ok, _ := c.Extension("STARTTLS"); ok {
+	// 	if err = c.StartTLS(t); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	if a != nil {
 		if ok, _ := c.Extension("AUTH"); ok {
