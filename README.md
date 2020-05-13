@@ -1,42 +1,27 @@
-email
+email in golang
 =====
-
-[![Build Status](https://travis-ci.org/jordan-wright/email.png?branch=master)](https://travis-ci.org/jordan-wright/email) [![GoDoc](https://godoc.org/github.com/jordan-wright/email?status.svg)](https://godoc.org/github.com/jordan-wright/email)
-
-Robust and flexible email library for Go
-
-### Email for humans
-The ```email``` package is designed to be simple to use, but flexible enough so as not to be restrictive. The goal is to provide an *email interface for humans*.
-
-The ```email``` package currently supports the following:
-*  From, To, Bcc, and Cc fields
-*  Email addresses in both "test@example.com" and "First Last &lt;test@example.com&gt;" format
-*  Text and HTML Message Body
-*  Attachments
-*  Read Receipts
-*  Custom headers
-*  More to come!
+forked from https://github.com/jordan-wright/email
+fix it so 163 email can use it (use ssl)
 
 ### Installation
-```go get github.com/jordan-wright/email```
-
-*Note: Version > 1 of this library requires Go v1.5 or above.*
-
-*If you need compatibility with previous Go versions, you can use the previous package at gopkg.in/jordan-wright/email.v1*
+```go get -u github.com/unievolver/email```
 
 ### Examples
-#### Sending email using Gmail
+
+#### SendWithTLS 
 ```go
-e := email.NewEmail()
-e.From = "Jordan Wright <test@gmail.com>"
-e.To = []string{"test@example.com"}
-e.Bcc = []string{"test_bcc@example.com"}
-e.Cc = []string{"test_cc@example.com"}
-e.Subject = "Awesome Subject"
-e.Text = []byte("Text Body is, of course, supported!")
-e.HTML = []byte("<h1>Fancy HTML is supported, too!</h1>")
-e.Send("smtp.gmail.com:587", smtp.PlainAuth("", "test@gmail.com", "password123", "smtp.gmail.com"))
-```
+	e := email.NewEmail()
+	e.From = "name<lab@163.com>"
+	e.To = []string{"lab@qq.com"}
+	e.Subject = "subject"
+	auth := smtp.PlainAuth("", "lab@163.com", "password", "smtp.163.com")
+	e.HTML = []byte("<h1>HTML content </h1>")
+	err := e.SendWithTLS("smtp.163.com:465", auth, nil)
+	if err != nil {
+		log.Println("Send Mail to", strings.Join(e.To, ","), " error:", err)
+	}
+	log.Println("Send Mail to", strings.Join(e.To, ","), " Successfully")
+``` 
 
 #### Another Method for Creating an Email
 You can also create an email directly by creating a struct as follows:
@@ -51,39 +36,5 @@ e := &email.Email {
 }
 ```
 
-#### Creating an Email From an io.Reader
-You can also create an email from any type that implements the ```io.Reader``` interface by using ```email.NewEmailFromReader```.
-
-#### Attaching a File
-```go
-e := NewEmail()
-e.AttachFile("test.txt")
-```
-
-#### A Pool of Reusable Connections
-```go
-(var ch <-chan *email.Email)
-p := email.NewPool(
-	"smtp.gmail.com:587",
-	4,
-	smtp.PlainAuth("", "test@gmail.com", "password123", "smtp.gmail.com"),
-)
-for i := 0; i < 4; i++ {
-	go func() {
-		for e := range ch {
-			p.Send(e, 10 * time.Second)
-		}
-	}()
-}
-```
-
 ### Documentation
-[http://godoc.org/github.com/jordan-wright/email](http://godoc.org/github.com/jordan-wright/email)
-
-### Other Sources
-Sections inspired by the handy [gophermail](https://github.com/jpoehls/gophermail) project.
-
-### Contributors
-I'd like to thank all the [contributors and maintainers](https://github.com/jordan-wright/email/graphs/contributors) of this package.
-
-A special thanks goes out to Jed Denlea [jeddenlea](https://github.com/jeddenlea) for his numerous contributions and optimizations.
+[http://godoc.org/github.com/unievolver/email](http://godoc.org/github.com/unievolver/email)
